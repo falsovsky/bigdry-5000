@@ -1,0 +1,176 @@
+# Lovelace dashboard for the BigDry 5000 (see 02-home-assistant-setup.md,
+# section 7, for import steps). Needs the icon files from section 6 copied
+# to config/www/bigdry/, and the Mushroom card set installed through HACS.
+# Change every entity_id below to match your own device's entity IDs.
+title: BigDry 5000
+views:
+- title: BigDry 5000
+  path: default_view
+  cards:
+  - type: vertical-stack
+    cards:
+    - type: custom:mushroom-template-card
+      entity: switch.bigdry_5000_power
+      primary: Power
+      secondary: '{{ states(''switch.bigdry_5000_power'') }}'
+      picture: '{% if is_state(''switch.bigdry_5000_power'', ''on'') %}/local/bigdry/power_active.png{%
+        else %}/local/bigdry/power.png{% endif %}'
+      icon_color: '{% if is_state(''switch.bigdry_5000_power'', ''on'') %}blue{% else
+        %}grey{% endif %}'
+      tap_action:
+        action: toggle
+      layout: vertical
+    - type: entities
+      title: Status
+      show_header_toggle: false
+      entities:
+      - entity: sensor.bigdry_5000_humidity
+      - entity: sensor.bigdry_5000_temperature
+    - type: conditional
+      conditions:
+      - entity: switch.bigdry_5000_power
+        state: 'on'
+      card:
+        type: markdown
+        content: <img src="/local/bigdry/nav_mode.png" width="20" height="20"> **Dehumidification
+          settings**
+    - type: conditional
+      conditions:
+      - entity: switch.bigdry_5000_power
+        state: 'on'
+      card:
+        type: grid
+        columns: 4
+        square: false
+        cards:
+        - type: custom:mushroom-template-card
+          entity: select.bigdry_5000_mode
+          primary: Normal
+          picture: '{% if is_state(''select.bigdry_5000_mode'', ''Normal'') %}/local/bigdry/mode_normal_active.png{%
+            else %}/local/bigdry/mode_normal.png{% endif %}'
+          icon_color: '{% if is_state(''select.bigdry_5000_mode'', ''Normal'') %}blue{%
+            else %}grey{% endif %}'
+          tap_action:
+            action: call-service
+            service: select.select_option
+            service_data:
+              entity_id: select.bigdry_5000_mode
+              option: Normal
+          layout: vertical
+        - type: custom:mushroom-template-card
+          entity: select.bigdry_5000_mode
+          primary: Continuous
+          picture: '{% if is_state(''select.bigdry_5000_mode'', ''Continuous'') %}/local/bigdry/mode_continuous_active.png{%
+            else %}/local/bigdry/mode_continuous.png{% endif %}'
+          icon_color: '{% if is_state(''select.bigdry_5000_mode'', ''Continuous'')
+            %}blue{% else %}grey{% endif %}'
+          tap_action:
+            action: call-service
+            service: select.select_option
+            service_data:
+              entity_id: select.bigdry_5000_mode
+              option: Continuous
+          layout: vertical
+        - type: custom:mushroom-template-card
+          entity: select.bigdry_5000_mode
+          primary: Powerful
+          picture: '{% if is_state(''select.bigdry_5000_mode'', ''Powerful'') %}/local/bigdry/mode_powerful_active.png{%
+            else %}/local/bigdry/mode_powerful.png{% endif %}'
+          icon_color: '{% if is_state(''select.bigdry_5000_mode'', ''Powerful'') %}blue{%
+            else %}grey{% endif %}'
+          tap_action:
+            action: call-service
+            service: select.select_option
+            service_data:
+              entity_id: select.bigdry_5000_mode
+              option: Powerful
+          layout: vertical
+        - type: custom:mushroom-template-card
+          entity: select.bigdry_5000_mode
+          primary: Dry clothes
+          picture: '{% if is_state(''select.bigdry_5000_mode'', ''Dry clothes'') %}/local/bigdry/mode_clothes_active.png{%
+            else %}/local/bigdry/mode_clothes.png{% endif %}'
+          icon_color: '{% if is_state(''select.bigdry_5000_mode'', ''Dry clothes'')
+            %}blue{% else %}grey{% endif %}'
+          tap_action:
+            action: call-service
+            service: select.select_option
+            service_data:
+              entity_id: select.bigdry_5000_mode
+              option: Dry clothes
+          layout: vertical
+    - type: conditional
+      conditions:
+      - entity: select.bigdry_5000_mode
+        state: Normal
+      - entity: switch.bigdry_5000_power
+        state: 'on'
+      card:
+        type: vertical-stack
+        cards:
+        - type: markdown
+          content: <img src="/local/bigdry/nav_fan.png" width="20" height="20"> **Wind
+            Speed**
+        - type: grid
+          columns: 2
+          square: false
+          cards:
+          - type: custom:mushroom-template-card
+            entity: select.bigdry_5000_wind_speed
+            primary: Speed 1
+            picture: '{% if is_state(''select.bigdry_5000_wind_speed'', ''Speed 1'')
+              %}/local/bigdry/fan_low_active.png{% else %}/local/bigdry/fan_low.png{%
+              endif %}'
+            icon_color: '{% if is_state(''select.bigdry_5000_wind_speed'', ''Speed
+              1'') %}blue{% else %}grey{% endif %}'
+            tap_action:
+              action: call-service
+              service: select.select_option
+              service_data:
+                entity_id: select.bigdry_5000_wind_speed
+                option: Speed 1
+            layout: vertical
+          - type: custom:mushroom-template-card
+            entity: select.bigdry_5000_wind_speed
+            primary: Speed 3
+            picture: '{% if is_state(''select.bigdry_5000_wind_speed'', ''Speed 3'')
+              %}/local/bigdry/fan_high_active.png{% else %}/local/bigdry/fan_high.png{%
+              endif %}'
+            icon_color: '{% if is_state(''select.bigdry_5000_wind_speed'', ''Speed
+              3'') %}blue{% else %}grey{% endif %}'
+            tap_action:
+              action: call-service
+              service: select.select_option
+              service_data:
+                entity_id: select.bigdry_5000_wind_speed
+                option: Speed 3
+            layout: vertical
+        - type: entities
+          entities:
+          - entity: input_number.bigdry_target_humidity
+            name: Target Humidity
+    - type: conditional
+      conditions:
+      - entity: switch.bigdry_5000_power
+        state: 'on'
+      card:
+        type: markdown
+        content: <img src="/local/bigdry/nav_func.png" width="20" height="20"> **Function**
+    - type: conditional
+      conditions:
+      - entity: switch.bigdry_5000_power
+        state: 'on'
+      card:
+        type: glance
+        show_name: true
+        show_state: true
+        entities:
+        - entity: switch.bigdry_5000_sleep
+          name: Sleep
+          image: /local/bigdry/func_sleep.png
+        - entity: switch.bigdry_5000_purify
+          name: Purify
+          image: /local/bigdry/func_purify.png
+        - entity: switch.bigdry_5000_lock
+          name: Lock
+          image: /local/bigdry/func_lock.png

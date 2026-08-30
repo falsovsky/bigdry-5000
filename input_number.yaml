@@ -1,0 +1,11 @@
+# Helper used to work around the number-entity float/int bug (see
+# 02-home-assistant-setup.md, section 4). Create via Settings -> Devices &
+# Services -> Helpers -> + Create Helper -> Number, or paste this into your
+# input_number: block in configuration.yaml.
+
+bigdry_target_humidity:
+  name: BigDry Target Humidity
+  min: 30
+  max: 80
+  step: 5
+  icon: mdi:water-percent

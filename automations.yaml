@@ -1,0 +1,34 @@
+# Automations for the Target Humidity workaround (see 02-home-assistant-setup.md, section 4).
+# Replace <your_device_id> with your Tuya device_id, and adjust the entity_ids
+# if your device/entities ended up named differently.
+#
+# Import: Settings -> Automations & Scenes -> ... (top right) -> Edit in YAML,
+# or copy each automation individually via the UI editor.
+
+- id: bigdry_humidity_write
+  alias: BigDry Target Humidity - write
+  triggers:
+    - platform: state
+      entity_id: input_number.bigdry_target_humidity
+  conditions: []
+  actions:
+    - action: localtuya.set_dp
+      data:
+        device_id: <your_device_id>
+        dp: 4
+        value: "{{ trigger.to_state.state | int }}"
+  mode: single
+
+- id: bigdry_humidity_sync
+  alias: BigDry Target Humidity - sync from device
+  triggers:
+    - platform: state
+      entity_id: number.bigdry_5000_target_humidity
+  conditions: []
+  actions:
+    - action: input_number.set_value
+      target:
+        entity_id: input_number.bigdry_target_humidity
+      data:
+        value: "{{ trigger.to_state.state }}"
+  mode: single
